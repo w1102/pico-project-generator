@@ -60,8 +60,8 @@ stdlib_examples_list = {
     'div' :     ("Low level HW Divider",    "divider.c",  "hardware/divider.h",   "hardware_divider")
 }
 
-debugger_list = ["SWD", "PicoProbe"]
-debugger_config_list = ["raspberrypi-swd.cfg", "picoprobe.cfg"]
+debugger_list = ["Jlink OB", "SWD", "PicoProbe"]
+debugger_config_list = ["jlink.cfg", "raspberrypi-swd.cfg", "picoprobe.cfg"]
 
 DEFINES = 0
 INITIALISERS = 1
@@ -857,8 +857,7 @@ def GenerateMain(folder, projectName, features, cpp):
                 file.write('\n')
 
     main = ('\n\n'
-            'int main()\n'
-            '{\n'
+            'int main() {\n'
             '    stdio_init_all();\n\n'
             )
 
@@ -873,9 +872,12 @@ def GenerateMain(folder, projectName, features, cpp):
                     main += '\n'
             main += '\n'
 
-    main += ('    puts("Hello, world!");\n\n'
-             '    return 0;\n'
-             '}\n'
+    main += (   '    for(;;) {\n'
+                '       puts("Hello, world!");\n'
+                '       sleep_ms(500);\n'
+                '   }\n\n'
+                '   return 0;\n'
+                '}\n'
             )
 
     file.write(main)
@@ -1003,13 +1005,13 @@ def generateProjectFiles(projectPath, projectName, sdkPath, projects, debugger):
                   '  "version": "0.2.0",\n'
                   '  "configurations": [\n'
                   '    {\n'
-                  '      "name": "Cortex Debug",\n'
+                  '      "name": "rp2040 Debug",\n'
                   '      "cwd": "${workspaceRoot}",\n'
                   '      "executable": "${command:cmake.launchTargetPath}",\n'
                   '      "request": "launch",\n'
                   '      "type": "cortex-debug",\n'
                   '      "servertype": "openocd",\n'
-                  '      "gdbPath": "gdb-multiarch",\n'
+                  '      "gdbPath": "arm-none-eabi-gdb",\n'
                   '      "device": "RP2040",\n'
                   '      "configFiles": [\n' + \
                   '        "interface/' + deb + '",\n' + \
@@ -1029,16 +1031,16 @@ def generateProjectFiles(projectPath, projectName, sdkPath, projects, debugger):
             c1 = ('{\n'
                   '  "configurations": [\n'
                   '    {\n'
-                  '      "name": "Linux",\n'
+                  '      "name": "Mac",\n'
                   '      "includePath": [\n'
                   '        "${workspaceFolder}/**",\n'
                   '        "${env:PICO_SDK_PATH}/**"\n'
                   '      ],\n'
                   '      "defines": [],\n'
-                  '      "compilerPath": "/usr/bin/arm-none-eabi-gcc",\n'
-                  '      "cStandard": "gnu17",\n'
-                  '      "cppStandard": "gnu++14",\n'
-                  '      "intelliSenseMode": "linux-gcc-arm",\n'
+                  '      "compilerPath": "/usr/local/bin/arm-none-eabi-gcc",\n'
+                  '      "cStandard": "c11",\n'
+                  '      "cppStandard": "c++17",\n'
+                  '      "intelliSenseMode": "gcc-x64",\n'
                   '      "configurationProvider" : "ms-vscode.cmake-tools"\n'
                   '    }\n'
                   '  ],\n'
@@ -1055,7 +1057,7 @@ def generateProjectFiles(projectPath, projectName, sdkPath, projects, debugger):
                    '      "visibility": "hidden"\n'
                    '               },\n'
                    '    "build" : {\n'
-                   '      "visibility": "hidden"\n'
+                   '      "visibility": "default"\n'
                    '               },\n'
                    '    "buildTarget" : {\n'
                    '      "visibility": "hidden"\n'

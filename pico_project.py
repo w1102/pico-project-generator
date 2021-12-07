@@ -16,6 +16,9 @@ import platform
 import shlex
 import csv
 
+from pathlib import Path
+
+
 import tkinter as tk
 from tkinter import messagebox as mb
 from tkinter import filedialog as fd
@@ -614,7 +617,12 @@ class ProjectWindow(tk.Frame):
 
         locationlbl = ttk.Label(mainFrame, text='Location :').grid(row=3, column=0, sticky=tk.E)
         self.locationName = tk.StringVar()
-        self.locationName.set(os.getcwd())
+
+        #self.locationName.set(os.getcwd())
+        home = str(Path.home())
+        desktop = home + "/Desktop"
+        self.locationName.set(desktop)
+
         locationEntry = ttk.Entry(mainFrame, textvariable=self.locationName).grid(row=3, column=1, columnspan=3, sticky=tk.W+tk.E, padx=5)
         locationBrowse = ttk.Button(mainFrame, text='Browse', command=self.browse).grid(row=3, column=4)
 
@@ -1020,10 +1028,24 @@ def generateProjectFiles(projectPath, projectName, sdkPath, projects, debugger):
                   '      "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",\n'
                   '      "runToMain": true,\n'
                   '      // Give restart the same functionality as runToMain\n'
-                  '      "postRestartCommands": [\n'
-                  '          "break main",\n'
-                  '          "continue"\n'
-                  '      ]\n'
+                  '      //"postRestartCommands": [\n'
+                  '      //    "break main",\n'
+                  '      //    "continue"\n'
+                  '      //],\n'
+                  '      "preLaunchCommands": [\n'
+                  '         "set mem inaccessible-by-default off",\n'
+                  '         "set verbose on"\n'
+                  '      ],\n'
+                  '      "postLaunchCommands": [\n'
+                  '         "monitor reset run",\n'
+                  '         "monitor sleep 200",\n'
+                  '         "monitor reset_halt sysresetreq"\n'
+                  '         ],\n'
+                  '     "postRestartCommands": [\n'
+                  '         "monitor psoc6 reset_halt sysresetreq",\n'
+                  '         "monitor gdb_sync",\n'
+                  '         "stepi"\n'
+                  '         ],\n'
                   '    }\n'
                   '  ]\n'
                   '}\n')

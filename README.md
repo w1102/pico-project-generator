@@ -1,3 +1,8 @@
+# New Features
+Add jlink OB debug with VScode
+
+Project folder default in desktop
+
 # pico-project-generator
 
 This is a command line or GUI tool, written in Python, to automatically generate a Pico C SDK Project.
